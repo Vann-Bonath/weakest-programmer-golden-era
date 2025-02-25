@@ -22,10 +22,11 @@ export class ApprovalRequestService {
     const requestRef = this.database.ref('approval-requests').push();
 
     const newRequest: ApprovalRequest = {
+      requestId: requestRef.key,
       requestorId: firebaseUid,
       requestData: { rank: createApprovalRequestDTO.rank },
       status: ApprovalStatus.PendingUpdate,
-      updateAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     await requestRef.set(newRequest);
@@ -34,25 +35,42 @@ export class ApprovalRequestService {
   }
 
   async approveRequest(requestId: string, firebaseUid: string) {
-    const requestRef = this.database.ref(`approval-requests/${requestId}`);
-    const snapshot = await requestRef.get();
+    try {
+      const requestRef = this.database.ref(`approval-requests/${requestId}`);
+      const snapshot = await requestRef.get();
+      const requestData = snapshot.val();
 
-    await requestRef.update({
-      status: ApprovalStatus.Approved,
-      approvedBy: firebaseUid,
-      updatedAt: new Date().toISOString(),
-    });
+      // Check if request exists
+      if (!snapshot.exists()) {
+        throw new Error(
+          `Approval request with ID ${requestId} does not exist.`,
+        );
+      }
 
-    const userRef = this.database.ref(`users/${snapshot.val().requestorId}`);
-    await userRef.update({
-      rank: snapshot.val().requestData.rank,
-    });
+      // Check if already approved or rejected
+      if (requestData.status !== ApprovalStatus.PendingUpdate) {
+        throw new Error(`Approval request is already ${requestData.status}.`);
+      }
 
-    return {
-      message: 'Request approved successfully, user rank updated',
-      requestId,
-      approvedBy: firebaseUid,
-      newRank: snapshot.val().requestData.rank,
-    };
+      const updates: Record<string, any> = {};
+      updates[`approval-requests/${requestId}/status `] =
+        ApprovalStatus.Approved;
+      updates[`approval-requests/${requestId}/approvedBy`] = firebaseUid;
+      updates[`approval-requests/${requestId}/updatedAt`] =
+        new Date().toISOString();
+      updates[`users/${requestData.requestorId}/rank`] =
+        requestData.requestData.rank;
+
+      await this.database.ref().update(updates);
+
+      return {
+        message: 'Request approved successfully, user rank updated',
+        requestId,
+        approvedBy: firebaseUid,
+        newRank: snapshot.val().requestData.rank,
+      };
+    } catch (error) {
+      throw new Error(`something up because of : ${error}`);
+    }
   }
 }

@@ -14,6 +14,9 @@ export type CreateApprovalRequestDTO = {
 
 export class ApprovalRequest {
   @IsString()
+  requestId: string;
+
+  @IsString()
   requestorId: string;
 
   @IsOptional()
@@ -26,5 +29,5 @@ export class ApprovalRequest {
   status: ApprovalStatus;
 
   @IsString()
-  updateAt: any;
+  updatedAt: any;
 }

@@ -12,3 +12,7 @@ programmer
 4 approval request update there rank
  - api for user to request update by requesting
  - api for god account to approve request
+
+
+ +++ paused at = 
+ try to get a user by there firebaseUid but some how after the request i see any result in postman but status code is 200
