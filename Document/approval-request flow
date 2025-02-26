@@ -1,0 +1,8 @@
+1/. user that already registered and created an account they can request to update there rank via approval request
+
+- dataflow
+
+  - user create a request via api, the request got store in the in approval-request table and then admin can approve those request to approve that request the account must have a role as a god, after approve i changed the status to approved and update the there status according to rank they requested.
+
+- user flow
+  -- user register there account and then create user account, when they want to rank up they can request to god if the god approve there rank will be updated.

@@ -1,7 +1,16 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApprovalRequestService } from './approval-request.service';
 import { CreateApprovalRequestDTO } from './approval-request';
 import { AuthGuard } from '../auth/auth.guard';
+import { GodGuard } from '../admin/admin.guard';
 
 @Controller('approval-request')
 export class ApprovalRequestController {
@@ -23,9 +32,14 @@ export class ApprovalRequestController {
   }
 
   @Post('approve-request/:requestId')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, GodGuard)
   async approveRequest(@Param('requestId') requestId: string, @Req() req: any) {
     const firebaseUid = req.user.uid;
     return this.approvalRequestService.approveRequest(requestId, firebaseUid);
+  }
+
+  @Get()
+  async getAllRequest() {
+    return this.approvalRequestService.getAllRequest();
   }
 }

@@ -23,7 +23,7 @@ export class UsersController {
   }
 
   @Get(':firebaseUid')
-  async getUser(@Param('firebaesUid') firebaseUid: string) {
+  async getUser(@Param('firebaseUid') firebaseUid: string) {
     return await this.usersService.getUser(firebaseUid);
   }
 

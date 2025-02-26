@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FirebaseService } from '../../firebase/firebase.service';
-import { CreateUserDTO } from './users.type';
+import { AccountRole, CreateUserDTO } from './users.type';
 import * as admin from 'firebase-admin';
 
 @Injectable()
@@ -13,7 +13,11 @@ export class UsersService {
 
   async createUser(createUserDTO: CreateUserDTO, firebaseUid: string) {
     const userRef = this.database.ref(`users/${firebaseUid}`);
-    await userRef.set({ firebaseUid, ...createUserDTO });
+    await userRef.set({
+      firebaseUid,
+      ...createUserDTO,
+      role: AccountRole.User,
+    });
 
     // Fetch the newly created user data
     const snapshot = await userRef.get();
@@ -25,8 +29,13 @@ export class UsersService {
       const userRef = this.database.ref(`users/${firebaseUid}`);
       const snapshot = await userRef.get();
 
+      if (!snapshot.exists()) {
+        throw new NotFoundException('user not found');
+      }
+
       return snapshot.val();
     } catch (error) {
+      console.error(`🔥 Failed to fetch user for UID: ${firebaseUid}`, error);
       throw new Error(`Failed to fetch user: ${error.message}`);
     }
   }

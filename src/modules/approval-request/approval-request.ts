@@ -2,15 +2,18 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Rank } from '../users/users.type';
 
 export enum ApprovalStatus {
-  NewAccount = 'new-account',
   PendingUpdate = 'pending-update',
   Approved = 'approved',
   Rejected = 'rejected',
 }
 
-export type CreateApprovalRequestDTO = {
-  rank: Rank;
-};
+export class CreateApprovalRequestDTO {
+  @IsOptional()
+  rank?: Rank;
+
+  @IsString()
+  remark: string;
+}
 
 export class ApprovalRequest {
   @IsString()
@@ -20,9 +23,7 @@ export class ApprovalRequest {
   requestorId: string;
 
   @IsOptional()
-  requestData?: {
-    rank: Rank;
-  };
+  requestData?: CreateApprovalRequestDTO;
 
   @IsNotEmpty()
   @IsEnum(ApprovalStatus)

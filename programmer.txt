@@ -8,11 +8,13 @@ programmer
 - create god account // done but i just set role manually to god in database for now
 - request for to god account for update account information  
     -- create an api for when user creating a update request that contain firebaseUid and updated data and status // done
-    -- create an api for god to approve a specific request and then somehow update the user information for them 
-4 approval request update there rank
- - api for user to request update by requesting
- - api for god account to approve request
+    -- create an api for god to approve a specific request and then somehow update the user information for them // done
+4 approval request update there rank //done
+ - api for user to request update by requesting // done
+ - api for god account to approve request // done
+ - get all of the request request // done
+ - the approve is kind of not response correctly in postman when approve an request, check that shit
+5. let add a reason why they asking for a rank up 
 
 
  +++ paused at = 
- try to get a user by there firebaseUid but some how after the request i see any result in postman but status code is 200

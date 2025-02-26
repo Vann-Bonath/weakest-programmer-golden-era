@@ -24,7 +24,7 @@ export class ApprovalRequestService {
     const newRequest: ApprovalRequest = {
       requestId: requestRef.key,
       requestorId: firebaseUid,
-      requestData: { rank: createApprovalRequestDTO.rank },
+      requestData: { ...createApprovalRequestDTO },
       status: ApprovalStatus.PendingUpdate,
       updatedAt: new Date().toISOString(),
     };
@@ -49,11 +49,11 @@ export class ApprovalRequestService {
 
       // Check if already approved or rejected
       if (requestData.status !== ApprovalStatus.PendingUpdate) {
-        throw new Error(`Approval request is already ${requestData.status}.`);
+        throw new Error(`Request Status must be pending-update.`);
       }
 
       const updates: Record<string, any> = {};
-      updates[`approval-requests/${requestId}/status `] =
+      updates[`approval-requests/${requestId}/status`] =
         ApprovalStatus.Approved;
       updates[`approval-requests/${requestId}/approvedBy`] = firebaseUid;
       updates[`approval-requests/${requestId}/updatedAt`] =
@@ -72,5 +72,12 @@ export class ApprovalRequestService {
     } catch (error) {
       throw new Error(`something up because of : ${error}`);
     }
+  }
+
+  async getAllRequest() {
+    const requestRef = this.database.ref(`approval-requests`);
+    const snapshot = await requestRef.get();
+
+    return snapshot.val();
   }
 }
